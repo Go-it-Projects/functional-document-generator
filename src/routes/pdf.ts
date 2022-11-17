@@ -343,7 +343,7 @@ export async function Pdf( fastify: FastifyInstance){
      .moveDown(1)
      .font(DEFAULT_FONT)
      .fontSize(DEFAULT_FONT_SIZE)
-     .text('Referencias', {
+     .text('Referências', {
          align:'left'
      })
 
