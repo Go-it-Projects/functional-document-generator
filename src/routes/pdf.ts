@@ -1,9 +1,9 @@
+import PDFTable from 'pdfkit-table'
 import PDFDocument from 'pdfkit'
 
 import fs from 'fs'
 import { FastifyInstance } from "fastify";
 import { z } from 'zod'
-import doc from 'pdfkit';
 
 export async function Pdf( fastify: FastifyInstance){
    fastify.post('/functionalDocument' ,async (req, reply) => {
@@ -15,8 +15,16 @@ export async function Pdf( fastify: FastifyInstance){
 
    //validating data using zod lib
     const user = z.object({
-        id: z.string().uuid(),
-        name: z.string(),
+        type: z.string(),
+        description: z.string()
+    })
+
+    const fields = z.object({
+        fieldName: z.string(),
+        required: z.boolean(),
+        fieldDescription: z.string(),
+        dataSource: z.string(),
+        editable: z.boolean(),
         type: z.string()
     })
 
@@ -28,8 +36,10 @@ export async function Pdf( fastify: FastifyInstance){
        documentScope: z.string(),
        projectDiagram: z.string().url(),
        userDescription: z.array(user),
-       functionalSpecifications: z.any(),
-
+       functionalSpecificationFields: z.array(fields),
+       sistemConfiguration: z.string().nullish(),
+       nonFunctionalRequests: z.string().nullish(),
+       dataConversion: z.string().nullish()
    })
 
     const documentInfo = documentData.parse(req.body)
@@ -37,7 +47,8 @@ export async function Pdf( fastify: FastifyInstance){
     // console.log(documentInfo)
 
    //document structure
-    const doc = new PDFDocument();
+    var doc = new PDFTable();
+
     doc.pipe(fs.createWriteStream('example2.pdf'))
 
     const DEFAULT_FONT_SIZE = 12
@@ -130,16 +141,15 @@ export async function Pdf( fastify: FastifyInstance){
     .fontSize(DEFAULT_FONT_SIZE)
 
     //users grid
-    .lineCap('butt')
-    .moveTo(270, 400)
-    .lineTo(270, 540)
-    .stroke()
-  
-     documentInfo.userDescription?.map(data => {
-        textInRowFirst(doc, data.name, 402);
-        row(doc, 400);
-     })
-
+   
+    doc
+    .table({
+        headers: [
+            {label: "Type", property: "type"},
+            {label: "Description", property: "description"}
+        ],
+        datas: documentInfo.userDescription
+    })
     doc
     .addPage()
     .font(BOLD_FONT)
@@ -187,205 +197,73 @@ export async function Pdf( fastify: FastifyInstance){
         align:'left'
     })
 
-    .lineCap('butt')
-    .moveTo(270, 400)
-    .lineTo(270, 540)
-    .stroke()
-  
-      row(doc, 400);
-      row(doc, 420);
-      row(doc, 440);
-      row(doc, 460);
-      row(doc, 480);
-      row(doc, 500);
-      row(doc, 520);
-  
-     documentInfo.userDescription?.map(data => {
-        textInRowFirst(doc, data.name, 402);
-     })
+    .moveDown(2)
+    doc
+    .table({
+        headers: [
+            {label: "Nome do Campo", property: "fieldName"},
+            {label: "Mandatório", property: "required"},
+            { label: "Editável", property:'editable' },
+            { label: "Tipo", property:'type' },
+            { label: "Descrição", property:'fieldDescription' },
+            { label: "Fonte de dados", property:'dataSource' }
+        ],
+        datas: documentInfo.functionalSpecificationFields
+    })
 
-     doc
-     .addPage()
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('4. Configuração do Sistema', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Aqui esta um exemplo da Configuração do Sistema, o usuario deverá ter a possibilidade de fazer upload de varias mockups', {
-         align:'left'
-     })
+    {
+        documentInfo.sistemConfiguration && 
+        doc
+        .addPage()
+        .moveDown(2)
+        .font(BOLD_FONT)
+        .fontSize(TITLE_FONT_SIZE)
+        .text('4. Configuração do Sistema', {
+            align:'left'
+        })
+    
+        .moveDown(1)
+        .font(DEFAULT_FONT)
+        .fontSize(DEFAULT_FONT_SIZE)
+        .text(documentInfo.sistemConfiguration, {
+            align:'left'
+        })
+    }
 
+   {
+    documentInfo.nonFunctionalRequests && 
+    doc
+    .moveDown(2)
+    .font(BOLD_FONT)
+    .fontSize(TITLE_FONT_SIZE)
+    .text('5. Outros requisitos do sistema/ Requisitos não funcionais', {
+        align:'left'
+    })
 
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('5. Outros requisitos do sistema/Requisitos não funcionais', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Requisitos não Funcionais: balblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablabla', {
-         align:'left'
-     })
+    .moveDown(1)
+    .font(DEFAULT_FONT)
+    .fontSize(DEFAULT_FONT_SIZE)
+    .text(documentInfo.nonFunctionalRequests, {
+        align:'left'
+    })
+   }
+  {
+    documentInfo.dataConversion &&
+    doc
+    .moveDown(2)
+    .font(BOLD_FONT)
+    .fontSize(TITLE_FONT_SIZE)
+    .text('6. Preparação de conversão de dados', {
+        align:'left'
+    })
 
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('6. Requisitos de relatório', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Requisitos de relátorio: balblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablabla', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('7. Integração de relátorio', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Integração de relátorio: balblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablablabalblablablablablabla', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('8. Tratamento de Exceções/Relatório de Erros', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Relatório de erros: 123 erros encontrados', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('9. Requisitos de migração/conversão de dados', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Requisitos de migração: 123 migrações e conversões', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('10. Estratégia de conversão de dados', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Estratégia 1,2 e 18 serão usadas', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('11. Preparação de conversão de dados', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Prepare os dados de maneira cascata', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('12. Espeficações da conversão de dados', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Espeficações ficaram aqui boy', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('13. Referencias', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Referências', {
-         align:'left'
-     })
-
-     .moveDown(2)
-     .font(BOLD_FONT)
-     .fontSize(TITLE_FONT_SIZE)
-     .text('14.  Problemas em aberto', {
-         align:'left'
-     })
- 
-     .moveDown(1)
-     .font(DEFAULT_FONT)
-     .fontSize(DEFAULT_FONT_SIZE)
-     .text('Problemas em aberto: 12 problemas', {
-         align:'left'
-     })
-
+    .moveDown(1)
+    .font(DEFAULT_FONT)
+    .fontSize(DEFAULT_FONT_SIZE)
+    .text(documentInfo.dataConversion, {
+        align:'left'
+    })
+  }
     doc.end()
    })
 }
-
-function textInRowFirst(doc: any, text: string, heigth: any) {
-    doc.y = heigth;
-    doc.x = 30;
-    doc.fillColor('black')
-    doc.text(text, {
-      paragraphGap: 5,
-      indent: 5,
-      align: 'justify',
-      columns: 1,
-    });
-    return doc
-  }
-  
-  function row(doc: any, heigth: any) {
-    doc
-    .lineJoin('miter')
-      .rect(30, heigth, 500, 20)
-      .stroke()
-    return doc
-  }
-
-  
-
- 
