@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors'
 
-import { Pdf } from './routes/pdf'
+import { FunctionalDocument } from './routes/FunctionalDocument'
 
 
 async function bootsstrap(){
@@ -13,7 +13,7 @@ async function bootsstrap(){
         origin:true
     })
 
-    fastify.register(Pdf)
+    fastify.register(FunctionalDocument)
 
     await fastify.listen({ port: 3333, /*host:'0.0.0.0'*/ })
 }
