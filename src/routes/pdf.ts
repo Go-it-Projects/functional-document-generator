@@ -1,9 +1,11 @@
 import PDFTable from 'pdfkit-table'
-import PDFDocument from 'pdfkit'
-
 import fs from 'fs'
 import { FastifyInstance } from "fastify";
 import { z } from 'zod'
+
+import { downloadImage } from '../utils/downloadImg';
+
+import { deleteImg } from '../utils/deleteImg';
 
 export async function Pdf( fastify: FastifyInstance){
    fastify.post('/functionalDocument' ,async (req, reply) => {
@@ -23,7 +25,7 @@ export async function Pdf( fastify: FastifyInstance){
         fieldName: z.string(),
         required: z.boolean(),
         fieldDescription: z.string(),
-        dataSource: z.string(),
+        dataSource: z.string().nullish(),
         editable: z.boolean(),
         type: z.string()
     })
@@ -43,13 +45,10 @@ export async function Pdf( fastify: FastifyInstance){
    })
 
     const documentInfo = documentData.parse(req.body)
-
-    // console.log(documentInfo)
+    await downloadImage(documentInfo.clientLogo, 'src/Images/clientlogo.png')
 
    //document structure
     var doc = new PDFTable();
-
-    doc.pipe(fs.createWriteStream('example2.pdf'))
 
     const DEFAULT_FONT_SIZE = 12
     const BIG_FONT_SIZE = 18
@@ -59,15 +58,14 @@ export async function Pdf( fastify: FastifyInstance){
     const BOLD_FONT = 'Helvetica-Bold'
 
     doc
-    .image('goitlogo.png', {
-        align: 'center',
-        fit: [450, 300],
-        valign: 'center',
-
+    .image('src/Images/clientlogo.png', (doc.page.width - 180)/2, doc.y,{
+        width: 180
     })
+
+    doc
     .fontSize(24)
     .font(BOLD_FONT)
-    .moveDown(12)
+    .moveDown(5)
     .text(documentInfo.clientName, {
         align: 'center'
     })
@@ -247,23 +245,28 @@ export async function Pdf( fastify: FastifyInstance){
         align:'left'
     })
    }
-  {
-    documentInfo.dataConversion &&
-    doc
-    .moveDown(2)
-    .font(BOLD_FONT)
-    .fontSize(TITLE_FONT_SIZE)
-    .text('6. Preparação de conversão de dados', {
-        align:'left'
-    })
+    {
+        documentInfo.dataConversion &&
+        doc
+        .moveDown(2)
+        .font(BOLD_FONT)
+        .fontSize(TITLE_FONT_SIZE)
+        .text('6. Preparação de conversão de dados', {
+            align:'left'
+        })
 
-    .moveDown(1)
-    .font(DEFAULT_FONT)
-    .fontSize(DEFAULT_FONT_SIZE)
-    .text(documentInfo.dataConversion, {
-        align:'left'
-    })
-  }
+        .moveDown(1)
+        .font(DEFAULT_FONT)
+        .fontSize(DEFAULT_FONT_SIZE)
+        .text(documentInfo.dataConversion, {
+            align:'left'
+        })
+    }
     doc.end()
-   })
+
+    doc.pipe(fs.createWriteStream(`${documentInfo.clientName}FunctionalDocument.pdf`))
+    await deleteImg('src/Images/clientlogo.png')
+    
+  })
 }
+
