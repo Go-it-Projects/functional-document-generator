@@ -5,7 +5,7 @@ interface DocumentProps {
     clientLogo: string,
     clientName: string,
     documentScope: string,
-    functionalSpecificationFields: any,
+    functionalSpecification: any,
     projectDescription: string,
     projectDiagram: string,
     projectName: string,
@@ -31,7 +31,7 @@ export function PDFStructure(props: DocumentProps){
   const BOLD_FONT = 'Helvetica-Bold'
 
   doc
-  .image('src/Images/clientlogo.png', (doc.page.width - 180)/2, doc.y,{
+  .image(`src/Images/${props.clientName}clientlogo.png`, (doc.page.width - 180)/2, doc.y,{
       width: 180
   })
 
@@ -126,62 +126,54 @@ export function PDFStructure(props: DocumentProps){
   .font(BOLD_FONT)
   .fontSize(TITLE_FONT_SIZE)
   .text('3.Especificações funcionais',{
-      align: 'left'
+      align: 'left',
   })
-  .moveDown(2)
-  .fontSize(SUB_TITLE_FONT_SIZE)
-  .text('3.1 Titulo especificação', {
-      align:'left'
-  })
+  {
+    props.functionalSpecification.map( (data: any) => {
+        doc
+        .font(BOLD_FONT)
+        .fontSize(SUB_TITLE_FONT_SIZE)
+        .text(data.title, {
+            align:'left'
+        })
 
-  .moveDown(2)
-  .fontSize(DEFAULT_FONT_SIZE)
-  .text('3.1.1 Descrição', {
-      align:'left'
-  })
+        .moveDown(2)
+        .fontSize(DEFAULT_FONT_SIZE)
+        .text('Descrição:', {
+            align:'left'
+        })
 
-  .moveDown(1)
-  .font(DEFAULT_FONT)
-  .fontSize(DEFAULT_FONT_SIZE)
-  .text('Aqui esta um exemplo de Especificação funcional, o usuario deverá ter a possibilidade de criar varias especificações', {
-      align:'left'
-  })
+        .moveDown(1)
+        .font(DEFAULT_FONT)
+        .fontSize(DEFAULT_FONT_SIZE)
+        .text(data.description, {
+            align:'left'
+        })
 
-  .moveDown(2)
-  .font(BOLD_FONT)
-  .fontSize(DEFAULT_FONT_SIZE)
-  .text('3.1.2 Mockups', {
-      align:'left'
-  })
 
-  .moveDown(1)
-  .font(DEFAULT_FONT)
-  .fontSize(DEFAULT_FONT_SIZE)
-  .text('Aqui esta um exemplo de Mock-ups da Especificação funcional, o usuario deverá ter a possibilidade de fazer upload de varias mockups', {
-      align:'left'
-  })
+        .moveDown(2)
+        .font(BOLD_FONT)
+        .fontSize(DEFAULT_FONT_SIZE)
+        .text('Especificação dos campos:', {
+            align:'left'
+        })
 
-  .moveDown(2)
-  .font(BOLD_FONT)
-  .fontSize(DEFAULT_FONT_SIZE)
-  .text('3.1.3 Especificação dos campos', {
-      align:'left'
-  })
+        .moveDown(3)
+        doc
+        .table({
+            headers: [
+                {label: "Nome do Campo", property: "fieldName"},
+                {label: "Mandatório", property: "required"},
+                { label: "Editável", property:'editable' },
+                { label: "Tipo", property:'type' },
+                { label: "Descrição", property:'fieldDescription' },
+                { label: "Fonte de dados", property:'dataSource' }
+            ],
+            datas: data.functionalSpecificationFields
+        })
 
-  .moveDown(2)
-  doc
-  .table({
-      headers: [
-          {label: "Nome do Campo", property: "fieldName"},
-          {label: "Mandatório", property: "required"},
-          { label: "Editável", property:'editable' },
-          { label: "Tipo", property:'type' },
-          { label: "Descrição", property:'fieldDescription' },
-          { label: "Fonte de dados", property:'dataSource' }
-      ],
-      datas: props.functionalSpecificationFields
-  })
-
+    })
+  }
   {
       props.sistemConfiguration && 
       doc
