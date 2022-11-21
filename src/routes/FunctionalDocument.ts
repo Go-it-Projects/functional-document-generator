@@ -23,6 +23,12 @@ export async function FunctionalDocument( fastify: FastifyInstance){
        type: z.string()
    })
 
+   const specification = z.object({
+     title: z.string(),
+     description: z.string(),
+     functionalSpecificationFields: z.array(fields).nullish(),
+   })
+
   const documentData = z.object({
       clientLogo: z.string().url(),
       clientName: z.string(),
@@ -31,7 +37,7 @@ export async function FunctionalDocument( fastify: FastifyInstance){
       documentScope: z.string(),
       projectDiagram: z.string().url(),
       userDescription: z.array(user),
-      functionalSpecificationFields: z.array(fields),
+      functionalSpecification: z.array(specification),
       sistemConfiguration: z.string().nullish(),
       nonFunctionalRequests: z.string().nullish(),
       dataConversion: z.string().nullish()
@@ -39,14 +45,14 @@ export async function FunctionalDocument( fastify: FastifyInstance){
 
    const documentInfo = documentData.parse(req.body)
 
-   await downloadImage(documentInfo.clientLogo, 'src/Images/clientlogo.png')
+   await downloadImage(documentInfo.clientLogo, `src/Images/${documentInfo.clientName}clientlogo.png`)
     
    //document structure
    const { 
     clientLogo,
     clientName,
     documentScope,
-    functionalSpecificationFields,
+    functionalSpecification,
     projectDescription,
     projectDiagram,
     projectName,
@@ -60,7 +66,7 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     clientLogo,
     clientName,
     documentScope,
-    functionalSpecificationFields,
+    functionalSpecification,
     projectDescription,
     projectDiagram,
     projectName,
@@ -70,7 +76,7 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     sistemConfiguration
     });
 
-   await deleteImg('src/Images/clientlogo.png')
+   await deleteImg(`src/Images/${documentInfo.clientName}clientlogo.png`)
   })
 }
 
