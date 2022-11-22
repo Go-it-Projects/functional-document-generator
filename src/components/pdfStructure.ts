@@ -129,11 +129,12 @@ export function PDFStructure(props: DocumentProps){
       align: 'left',
   })
   {
-    props.functionalSpecification.map( (data: any) => {
+    props.functionalSpecification.forEach( (data: any, index: any) => {
         doc
+        .moveDown(2)
         .font(BOLD_FONT)
         .fontSize(SUB_TITLE_FONT_SIZE)
-        .text(data.title, {
+        .text("3."+ (index + 1)+" "+ data.title, {
             align:'left'
         })
 
@@ -152,15 +153,8 @@ export function PDFStructure(props: DocumentProps){
 
 
         .moveDown(2)
-        .font(BOLD_FONT)
-        .fontSize(DEFAULT_FONT_SIZE)
-        .text('Especificação dos campos:', {
-            align:'left'
-        })
-
-        .moveDown(3)
-        doc
         .table({
+            title:'Especificação dos campos:',
             headers: [
                 {label: "Nome do Campo", property: "fieldName"},
                 {label: "Mandatório", property: "required"},
