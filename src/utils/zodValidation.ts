@@ -26,7 +26,7 @@ export const documentData = z.object({
    projectDescription: z.string(),
    projectName: z.string(),
    documentScope: z.string(),
-   projectDiagram: z.string().url(),
+   projectDiagram: z.string().url().nullish(),
    userDescription: z.array(user),
    functionalSpecification: z.array(specification),
    sistemConfiguration: z.string().nullish(),
