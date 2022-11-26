@@ -4,6 +4,7 @@ import { downloadImage } from '../utils/downloadImg';
 import { deleteImg } from '../utils/deleteImg';
 import { PDFStructure } from '../components/pdfStructure';
 import { documentData } from "../utils/zodValidation";
+import { createNodePage } from "../utils/notionIntegration";
 
 export async function FunctionalDocument( fastify: FastifyInstance){
    fastify.post('/functionalDocument' ,async (req, reply) => {
@@ -43,6 +44,8 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     });
 
    await deleteImg(`src/Images/${documentInfo.clientName}clientlogo.png`)
+
+   await createNodePage( projectName, projectDescription, clientLogo)
   })
 }
 

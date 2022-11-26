@@ -7,7 +7,7 @@ interface DocumentProps {
     documentScope: string,
     functionalSpecification: any,
     projectDescription: string,
-    projectDiagram: string,
+    projectDiagram: string | null | undefined ,
     projectName: string,
     userDescription: any,
     sistemConfiguration: string | null | undefined ,
@@ -89,27 +89,41 @@ export function PDFStructure(props: DocumentProps){
   .text('2.Overview da solução',{
       align: 'left'
   })
-  .moveDown(1)
-  .fontSize(SUB_TITLE_FONT_SIZE)
-  .text('2.1 Diagramas', {
-      align:'left'
-  })
-  .font(DEFAULT_FONT)
-  .moveDown(1)
-  .fontSize(DEFAULT_FONT_SIZE)
-  .text('Diagramas ficarão aqui rs rs rs', {
-      align:'left'
-  })
-
-  .moveDown(2)
-  .font(BOLD_FONT)
-  .fontSize(SUB_TITLE_FONT_SIZE)
-  .text('2.2 Usuários do sistema', {
-      align:'left'
-  })
-  .font(DEFAULT_FONT)
-  .moveDown(1)
-  .fontSize(DEFAULT_FONT_SIZE)
+  {
+    props.projectDiagram ?
+    doc
+    .moveDown(1)
+    .fontSize(SUB_TITLE_FONT_SIZE)
+    .text('2.1 Diagramas', {
+        align:'left'
+    })
+    .font(DEFAULT_FONT)
+    .moveDown(1)
+    .fontSize(DEFAULT_FONT_SIZE)
+    .text('Diagramas ficarão aqui rs rs rs', {
+        align:'left'
+    })
+    .moveDown(2)
+    .font(BOLD_FONT)
+    .fontSize(SUB_TITLE_FONT_SIZE)
+    .text('2.2 Usuários do sistema', {
+        align:'left'
+    })
+    .font(DEFAULT_FONT)
+    .moveDown(1)
+    .fontSize(DEFAULT_FONT_SIZE):
+    doc
+    .moveDown(2)
+    .font(BOLD_FONT)
+    .fontSize(SUB_TITLE_FONT_SIZE)
+    .text('2.1 Usuários do sistema', {
+        align:'left'
+    })
+    .font(DEFAULT_FONT)
+    .moveDown(1)
+    .fontSize(DEFAULT_FONT_SIZE)
+  }
+  
 
   //users grid
  
@@ -138,7 +152,7 @@ export function PDFStructure(props: DocumentProps){
             align:'left'
         })
 
-        .moveDown(2)
+        .moveDown(1)
         .fontSize(DEFAULT_FONT_SIZE)
         .text('Descrição:', {
             align:'left'
@@ -153,6 +167,9 @@ export function PDFStructure(props: DocumentProps){
 
 
         .moveDown(2)
+       {
+        data.functionalSpecificationFields &&
+        doc
         .table({
             title:'Especificação dos campos:',
             headers: [
@@ -165,6 +182,7 @@ export function PDFStructure(props: DocumentProps){
             ],
             datas: data.functionalSpecificationFields
         })
+       }
 
     })
   }
