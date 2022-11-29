@@ -31,5 +31,6 @@ export const documentData = z.object({
    functionalSpecification: z.array(specification),
    sistemConfiguration: z.string().nullish(),
    nonFunctionalRequests: z.string().nullish(),
-   dataConversion: z.string().nullish()
+   dataConversion: z.string().nullish(),
+   officialDocument: z.boolean()
 })

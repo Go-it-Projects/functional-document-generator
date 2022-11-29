@@ -12,7 +12,8 @@ interface DocumentProps {
     userDescription: any,
     sistemConfiguration: string | null | undefined ,
     nonFunctionalRequests: string | null | undefined,
-    dataConversion: string | null | undefined
+    dataConversion: string | null | undefined,
+    officialDocument?: boolean
 }
 
 export function PDFStructure(props: DocumentProps){
@@ -241,5 +242,6 @@ export function PDFStructure(props: DocumentProps){
   }
   doc.end()
 
-  doc.pipe(fs.createWriteStream(`${props.clientName}FunctionalDocument.pdf`))
+  const nomeCliente = props.clientName.replace(" ", "")
+  doc.pipe(fs.createWriteStream(`${nomeCliente}FunctionalDocument.pdf`))
 }
