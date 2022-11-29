@@ -1,12 +1,11 @@
 import { Client } from "@notionhq/client"
 import dotenv from 'dotenv'
-import fs from 'fs'
 dotenv.config();
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY })
-const pageId = process.env.NOTION_PAGE_ID
+const pageId = 'fe231da276534d1cb9e5cd8f8d9bbf41'
 
-export async function createNodePage(projectName: string, projectDescription: string, clientLogo: string ){
+export async function createNodePage(projectName: string, projectDescription: string, clientLogo: string, nomeCliente:string){
 
     const response = await notion.pages.create({
         "cover": {
@@ -75,15 +74,15 @@ export async function createNodePage(projectName: string, projectDescription: st
                         }
                     ]
                 }
+            },
+            {
+                "object": "block",
+                "file": {
+                   "external":{
+                    "url":`https://functional-document-bucket.s3.amazonaws.com/${nomeCliente}-FunctionalDocument.pdf`
+                   }
+                }
             }
-            // {
-            //     "object": "block",
-            //     "file": {
-            //        "external":{
-            //         "url":""
-            //        }
-            //     }
-            // }
         ]
     });
 

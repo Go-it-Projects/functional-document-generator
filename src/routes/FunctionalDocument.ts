@@ -5,11 +5,12 @@ import { deleteImg } from '../utils/deleteImg';
 import { PDFStructure } from '../components/pdfStructure';
 import { documentData } from "../utils/zodValidation";
 import { createNodePage } from "../utils/notionIntegration";
+import { UploadFile } from "../utils/uploadFile";
+
+import fs from 'fs'
 
 export async function FunctionalDocument( fastify: FastifyInstance){
    fastify.post('/functionalDocument' ,async (req, reply) => {
-  //validating data using zod lib
-
    const documentInfo = documentData.parse(req.body)
 
    await downloadImage(documentInfo.clientLogo, `src/Images/${documentInfo.clientName}clientlogo.png`)
@@ -27,6 +28,7 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     dataConversion,
     nonFunctionalRequests,
     sistemConfiguration,
+    officialDocument
     } = documentInfo   
 
    PDFStructure({ 
@@ -40,12 +42,21 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     userDescription,
     dataConversion,
     nonFunctionalRequests,
-    sistemConfiguration
+    sistemConfiguration,
+    officialDocument
     });
 
    await deleteImg(`src/Images/${documentInfo.clientName}clientlogo.png`)
 
-   await createNodePage( projectName, projectDescription, clientLogo)
+    const nomeCliente = clientName.replace(" ", "")
+    var document = fs.readFileSync(`${nomeCliente}FunctionalDocument.pdf`)
+
+    await UploadFile(document, nomeCliente)
+
+   if(officialDocument == true){
+     createNodePage( projectName, documentScope, clientLogo, nomeCliente)
+   }
+
   })
 }
 
