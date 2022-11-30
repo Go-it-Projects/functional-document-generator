@@ -1,6 +1,6 @@
 Código desenvolvido em nodejs
 
-Utilizar versão do node <=12.0.0 
+Utilizar versão do node =>12.0.0 
 
 Código com o objetivo de gerar documentos em PDF no formato de um documento funcional.
 
