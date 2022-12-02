@@ -1,4 +1,7 @@
 import AWS from 'aws-sdk';
+import fs from 'fs'
+
+import { string } from 'zod';
 
 const s3 = new AWS.S3({
     accessKeyId: "AKIA4WHO3N32P7YQKDHC", //process.env.AWS_ACCESS_KEY,
@@ -7,7 +10,7 @@ const s3 = new AWS.S3({
 
 export async function UploadFile(file: Buffer,nomeCliente: string){
 
-    const params = {
+    const params =  {
         Bucket: 'functional-document-bucket',
         Key : `${nomeCliente}-FunctionalDocument.pdf`,
         Body: file,
@@ -20,3 +23,4 @@ export async function UploadFile(file: Buffer,nomeCliente: string){
         console.log(`File uploaded successfully. ${data.Location}`);
     })
 }
+

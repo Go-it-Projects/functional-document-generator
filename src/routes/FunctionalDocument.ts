@@ -1,15 +1,17 @@
 import { FastifyInstance } from "fastify";
-import { downloadImage } from '../utils/downloadImg';
 
-import { deleteImg } from '../utils/deleteImg';
+import { downloadImage } from '../utils/downloadImg';
+import { deleteFiles } from '../utils/deleteFiles';
 import { PDFStructure } from '../components/pdfStructure';
 import { documentData } from "../utils/zodValidation";
 import { createNodePage } from "../utils/notionIntegration";
 import { UploadFile } from "../utils/uploadFile";
-
 import fs from 'fs'
+import { deletePDF } from "../utils/deletePDF";
 
-export async function FunctionalDocument( fastify: FastifyInstance){
+
+
+export async function FunctionalDocument( fastify: FastifyInstance) {
    fastify.post('/functionalDocument' ,async (req, reply) => {
    const documentInfo = documentData.parse(req.body)
 
@@ -31,7 +33,7 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     officialDocument
     } = documentInfo   
 
-   PDFStructure({ 
+    await PDFStructure({ 
     clientLogo,
     clientName,
     documentScope,
@@ -46,17 +48,24 @@ export async function FunctionalDocument( fastify: FastifyInstance){
     officialDocument
     });
 
-   await deleteImg(`src/Images/${documentInfo.clientName}clientlogo.png`)
-
     const nomeCliente = clientName.replace(" ", "")
-    var document = fs.readFileSync(`${nomeCliente}FunctionalDocument.pdf`)
-
-    await UploadFile(document, nomeCliente)
-
-   if(officialDocument == true){
-     createNodePage( projectName, documentScope, clientLogo, nomeCliente)
-   }
-
+    
+    deleteFiles(`src/Images/${documentInfo.clientName}clientlogo.png`)
+    
+    setTimeout(() => {
+      var document = fs.readFileSync(`src/Document/${nomeCliente}FunctionalDocument.pdf`)
+      UploadFile(document,nomeCliente) 
+    },5000)
+    
+    
+    if(officialDocument == true){
+      createNodePage( projectName, documentScope, clientLogo, nomeCliente)
+    }
+    
+    setTimeout(() => {
+      deletePDF(`src/Document/${nomeCliente}FunctionalDocument.pdf`)
+    },5000)
+    
   })
 }
 

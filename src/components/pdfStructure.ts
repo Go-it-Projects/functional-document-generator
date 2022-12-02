@@ -16,7 +16,7 @@ interface DocumentProps {
     officialDocument?: boolean
 }
 
-export function PDFStructure(props: DocumentProps){
+export async function PDFStructure(props: DocumentProps){
       //generating the date automaticaly
   const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
   var today = new Date()
@@ -243,5 +243,5 @@ export function PDFStructure(props: DocumentProps){
   doc.end()
 
   const nomeCliente = props.clientName.replace(" ", "")
-  doc.pipe(fs.createWriteStream(`${nomeCliente}FunctionalDocument.pdf`))
+  doc.pipe(fs.createWriteStream(`src/Document/${nomeCliente}FunctionalDocument.pdf`))
 }
