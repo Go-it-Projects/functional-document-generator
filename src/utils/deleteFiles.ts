@@ -1,9 +1,10 @@
 import fs from 'fs'
 
-export async function deleteImg(filepath: string){
-    try{
+export async function deleteFiles(filepath:string){
+
+    try {
         fs.unlinkSync(filepath)
-    }catch(err){
+    } catch (err) { 
         console.log(err)
     }
 }

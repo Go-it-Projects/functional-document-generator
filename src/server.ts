@@ -3,7 +3,6 @@ import cors from '@fastify/cors'
 
 import { FunctionalDocument } from './routes/FunctionalDocument'
 
-
 async function bootsstrap(){
     const fastify = Fastify({
         logger: true, //send log for all actions on application
