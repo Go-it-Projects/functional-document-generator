@@ -90,6 +90,7 @@ export async function PDFStructure(props: DocumentProps){
   .text('2.Overview da solução',{
       align: 'left'
   })
+
   {
     props.projectDiagram ?
     doc
@@ -98,18 +99,21 @@ export async function PDFStructure(props: DocumentProps){
     .text('2.1 Diagramas', {
         align:'left'
     })
+
     .font(DEFAULT_FONT)
     .moveDown(1)
     .fontSize(DEFAULT_FONT_SIZE)
     .text('Diagramas ficarão aqui rs rs rs', {
         align:'left'
     })
+
     .moveDown(2)
     .font(BOLD_FONT)
     .fontSize(SUB_TITLE_FONT_SIZE)
     .text('2.2 Usuários do sistema', {
         align:'left'
     })
+
     .font(DEFAULT_FONT)
     .moveDown(1)
     .fontSize(DEFAULT_FONT_SIZE):
@@ -120,14 +124,12 @@ export async function PDFStructure(props: DocumentProps){
     .text('2.1 Usuários do sistema', {
         align:'left'
     })
+
     .font(DEFAULT_FONT)
     .moveDown(1)
     .fontSize(DEFAULT_FONT_SIZE)
   }
-  
-
   //users grid
- 
   doc
   .table({
       headers: [
@@ -136,6 +138,7 @@ export async function PDFStructure(props: DocumentProps){
       ],
       datas: props.userDescription
   })
+
   doc
   .addPage()
   .font(BOLD_FONT)
@@ -143,6 +146,7 @@ export async function PDFStructure(props: DocumentProps){
   .text('3.Especificações funcionais',{
       align: 'left',
   })
+
   {
     props.functionalSpecification.forEach( (data: any, index: any) => {
         doc
@@ -165,8 +169,6 @@ export async function PDFStructure(props: DocumentProps){
         .text(data.description, {
             align:'left'
         })
-
-
         .moveDown(2)
        {
         data.functionalSpecificationFields &&
@@ -184,7 +186,6 @@ export async function PDFStructure(props: DocumentProps){
             datas: data.functionalSpecificationFields
         })
        }
-
     })
   }
   {
@@ -222,7 +223,9 @@ export async function PDFStructure(props: DocumentProps){
   .text(props.nonFunctionalRequests, {
       align:'left'
   })
+
  }
+ 
   {
       props.dataConversion &&
       doc
@@ -244,4 +247,5 @@ export async function PDFStructure(props: DocumentProps){
 
   const nomeCliente = props.clientName.replace(" ", "")
   doc.pipe(fs.createWriteStream(`src/Document/${nomeCliente}FunctionalDocument.pdf`))
+
 }

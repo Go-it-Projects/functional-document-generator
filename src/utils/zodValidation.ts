@@ -17,7 +17,7 @@ const fields = z.object({
 const specification = z.object({
   title: z.string(),
   description: z.string(),
-  functionalSpecificationFields: z.array(fields).nullish(),
+  functionalSpecificationFields: z.array(fields).nullish()
 })
 
 export const documentData = z.object({
