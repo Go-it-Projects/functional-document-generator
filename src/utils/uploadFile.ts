@@ -1,7 +1,4 @@
 import AWS from 'aws-sdk';
-import fs from 'fs'
-
-import { string } from 'zod';
 
 const s3 = new AWS.S3({
     accessKeyId: "AKIA4WHO3N32P7YQKDHC", //process.env.AWS_ACCESS_KEY,

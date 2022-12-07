@@ -8,7 +8,7 @@ export  async  function downloadImage( url: string, filepath: string){
         responseType: 'stream'
         })
 
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve , reject) => {
         response.data.pipe(fs.createWriteStream(filepath))
         .on('error', reject)
         .once('close', () => resolve(filepath))

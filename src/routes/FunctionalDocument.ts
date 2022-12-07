@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-
 import { downloadImage } from '../utils/downloadImg';
 import { deleteFiles } from '../utils/deleteFiles';
 import { PDFStructure } from '../components/pdfStructure';
@@ -12,11 +11,13 @@ import { deletePDF } from "../utils/deletePDF";
 
 
 export async function FunctionalDocument( fastify: FastifyInstance) {
+
    fastify.post('/functionalDocument' ,async (req, reply) => {
+
    const documentInfo = documentData.parse(req.body)
 
    await downloadImage(documentInfo.clientLogo, `src/Images/${documentInfo.clientName}clientlogo.png`)
-    
+
    //document structure
    const { 
     clientLogo,
@@ -56,7 +57,6 @@ export async function FunctionalDocument( fastify: FastifyInstance) {
       var document = fs.readFileSync(`src/Document/${nomeCliente}FunctionalDocument.pdf`)
       UploadFile(document,nomeCliente) 
     },5000)
-    
     
     if(officialDocument == true){
       createNodePage( projectName, documentScope, clientLogo, nomeCliente)
